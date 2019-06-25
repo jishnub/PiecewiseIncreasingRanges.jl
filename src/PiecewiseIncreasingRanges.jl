@@ -221,4 +221,24 @@ function findnearest(r::PiecewiseIncreasingRange, x, within_half_step::Bool=fals
     ifelse(d >= step(rg)/2, idx-1, idx)
 end
 
+Base.UnitRange(inds::PiecewiseIncreasingRange) = Base.OneTo(length(inds))
+
+Base.checkindex(::Type{Bool}, inds::PiecewiseIncreasingRange, i) =
+    throw(ArgumentError("unable to check bounds for indices of type $(typeof(i))"))
+Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,i::Real) = any(in.(i,inds.ranges))
+Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,::Colon) = true
+Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,::Base.Slice) = true
+function Base.checkindex(::Type{Bool}, inds::PiecewiseIncreasingRange, r::AbstractRange)
+    isempty(r) | any(checkindex.(Bool,inds.ranges,r))
+end
+Base.checkindex(::Type{Bool}, indx::PiecewiseIncreasingRange, I::AbstractVector{Bool}) = UnitRange(indx) == axes(parent(I),1)
+Base.checkindex(::Type{Bool}, indx::PiecewiseIncreasingRange, I::AbstractArray{Bool}) = false
+function Base.checkindex(::Type{Bool}, inds::PiecewiseIncreasingRange, I::AbstractArray)
+    b = true
+    for i in I
+        b &= checkindex(Bool, inds, i)
+    end
+    b
+end
+
 end # module
