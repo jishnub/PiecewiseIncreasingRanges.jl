@@ -72,7 +72,7 @@ function combine_ranges(ranges::Vector{R}, firstrg::R, firstrgidx::Int) where {R
 
     push!(newranges, currg)
     (newranges, offsets)
-end
+end 
 
 struct PiecewiseIncreasingRange{T,R<:AbstractRange,S} <: AbstractVector{T}
     ranges::Vector{R}
@@ -223,13 +223,14 @@ end
 
 Base.UnitRange(inds::PiecewiseIncreasingRange) = Base.OneTo(length(inds))
 
+# These functions let us use PiecewiseIncreasingRange as an array axis
 Base.checkindex(::Type{Bool}, inds::PiecewiseIncreasingRange, i) =
     throw(ArgumentError("unable to check bounds for indices of type $(typeof(i))"))
 Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,i::Real) = any(in.(i,inds.ranges))
 Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,::Colon) = true
 Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,::Base.Slice) = true
 function Base.checkindex(::Type{Bool}, inds::PiecewiseIncreasingRange, r::AbstractRange)
-    isempty(r) | any(checkindex.(Bool,inds.ranges,r))
+    isempty(r) | any(checkindex(Bool,indrng,r) for indrng in inds.ranges)
 end
 Base.checkindex(::Type{Bool}, indx::PiecewiseIncreasingRange, I::AbstractVector{Bool}) = UnitRange(indx) == axes(parent(I),1)
 Base.checkindex(::Type{Bool}, indx::PiecewiseIncreasingRange, I::AbstractArray{Bool}) = false
