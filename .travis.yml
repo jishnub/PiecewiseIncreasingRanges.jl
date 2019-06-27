@@ -9,6 +9,7 @@ notifications:
   email: false
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia --check-bounds=yes -e 'if VERSION >= v"0.7.0-" using Pkg; end; Pkg.clone(pwd()); Pkg.build("PiecewiseIncreasingRanges"); Pkg.test("PiecewiseIncreasingRanges"; coverage=true)'
+  - julia --color=yes -e 'using Pkg; Pkg.build()'
+  - julia --check-bounds=yes --color=yes -e 'using Pkg; Pkg.test(coverage=true)'
 after_success:
-  - if [ $TRAVIS_JULIA_VERSION = "nightly" ]; then julia -e 'if VERSION >= v"0.7.0-" using Pkg; end; import PiecewiseIncreasingRanges; cd(joinpath(dirname(pathof(PiecewiseIncreasingRanges)),"..")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'; fi
+  - if [ $TRAVIS_JULIA_VERSION = "nightly" ]; then julia -e 'using Pkg; import PiecewiseIncreasingRanges; cd(joinpath(dirname(pathof(PiecewiseIncreasingRanges)),"..")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'; fi
