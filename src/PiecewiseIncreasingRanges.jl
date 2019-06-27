@@ -168,11 +168,14 @@ Base.Order.lt(o::PiecewiseIncreasingRangeFirstOrdering, a, b) = isless(first(a),
 struct PiecewiseIncreasingRangeLastOrdering <: Ordering end
 Base.Order.lt(o::PiecewiseIncreasingRangeLastOrdering, a, b) = isless(last(a), last(b))
 
+const PIRLO = PiecewiseIncreasingRangeLastOrdering()
+const PIRFO = PiecewiseIncreasingRangeLastOrdering()
+
 function Base.searchsortedfirst(r::PiecewiseIncreasingRange, x)
     isempty(r.ranges) && return 1
     xd = multiply_divisor(r, x)
 
-    rgidx = searchsortedfirst(r.ranges, xd, PiecewiseIncreasingRangeLastOrdering())
+    rgidx = searchsortedfirst(r.ranges, xd, PIRLO)
     rgidx > length(r.ranges) && return length(r) + 1
     searchsortedfirst(r.ranges[rgidx], xd, Forward) + r.offsets[rgidx] - 1
 end
@@ -181,7 +184,7 @@ function Base.searchsortedlast(r::PiecewiseIncreasingRange, x)
     isempty(r.ranges) && return 1
     xd = multiply_divisor(r, x)
 
-    rgidx = searchsortedlast(r.ranges, xd, PiecewiseIncreasingRangeFirstOrdering())
+    rgidx = searchsortedlast(r.ranges, xd, PIRFO)
     rgidx == 0 && return 0
     searchsortedlast(r.ranges[rgidx], xd, Forward) + r.offsets[rgidx] - 1
 end
@@ -192,7 +195,7 @@ function findnearest(r::PiecewiseIncreasingRange, x, within_half_step::Bool=fals
     isempty(r.ranges) && throw(NoNearestSampleError())
     xd = multiply_divisor(r, x)
 
-    rgidx = searchsortedfirst(r.ranges, xd, PiecewiseIncreasingRangeLastOrdering())
+    rgidx = searchsortedfirst(r.ranges, xd, PIRLO)
     if rgidx > length(r.ranges)
         rgend = r.ranges[end]
         within_half_step && xd > rgend[end]+step(rgend)/2 && throw(NoNearestSampleError())
