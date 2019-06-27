@@ -224,8 +224,6 @@ function findnearest(r::PiecewiseIncreasingRange, x, within_half_step::Bool=fals
     ifelse(d >= step(rg)/2, idx-1, idx)
 end
 
-Base.UnitRange(inds::PiecewiseIncreasingRange) = Base.OneTo(length(inds))
-
 # These functions let us use PiecewiseIncreasingRange as an array axis
 Base.checkindex(::Type{Bool}, inds::PiecewiseIncreasingRange, i) =
     throw(ArgumentError("unable to check bounds for indices of type $(typeof(i))"))
