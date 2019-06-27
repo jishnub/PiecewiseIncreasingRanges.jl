@@ -232,7 +232,7 @@ Base.checkindex(::Type{Bool}, inds::PiecewiseIncreasingRange, i) =
 function Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,i::Real)
     found=false
     for r in inds.ranges
-        found &= i ∈ r
+        found |= i ∈ r
         found && break
     end
     found
