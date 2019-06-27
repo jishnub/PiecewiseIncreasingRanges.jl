@@ -229,7 +229,14 @@ Base.UnitRange(inds::PiecewiseIncreasingRange) = Base.OneTo(length(inds))
 # These functions let us use PiecewiseIncreasingRange as an array axis
 Base.checkindex(::Type{Bool}, inds::PiecewiseIncreasingRange, i) =
     throw(ArgumentError("unable to check bounds for indices of type $(typeof(i))"))
-Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,i::Real) = any(in.(i,inds.ranges))
+function Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,i::Real)
+    found=false
+    for r in inds.ranges
+        found &= i ∈ r
+        found && break
+    end
+    found
+end
 Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,::Colon) = true
 Base.checkindex(::Type{Bool},inds::PiecewiseIncreasingRange,::Base.Slice) = true
 function Base.checkindex(::Type{Bool}, inds::PiecewiseIncreasingRange, r::AbstractRange)
