@@ -169,7 +169,7 @@ struct PiecewiseIncreasingRangeLastOrdering <: Ordering end
 Base.Order.lt(o::PiecewiseIncreasingRangeLastOrdering, a, b) = isless(last(a), last(b))
 
 const PIRLO = PiecewiseIncreasingRangeLastOrdering()
-const PIRFO = PiecewiseIncreasingRangeLastOrdering()
+const PIRFO = PiecewiseIncreasingRangeFirstOrdering()
 
 function Base.searchsortedfirst(r::PiecewiseIncreasingRange, x)
     isempty(r.ranges) && return 1
