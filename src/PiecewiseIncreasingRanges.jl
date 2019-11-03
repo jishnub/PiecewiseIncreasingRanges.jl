@@ -283,7 +283,7 @@ end
     _compute_newrgs(R,r,x)
 end
 
-function Base.getindex(r::PiecewiseIncreasingRange{T,R,S}, x::AbstractRange{Int}) where {T,R,S}
+@inline @propagate_inbounds function Base.getindex(r::PiecewiseIncreasingRange{T,R,S}, x::AbstractRange{Int}) where {T,R,S}
     isempty(x) && return PiecewiseIncreasingRange{T,R,S}(R[], Int[], r.divisor)
     (first(x) >= 1 && last(x) <= length(r)) || throw(BoundsError())
 
@@ -297,7 +297,7 @@ function Base.getindex(r::PiecewiseIncreasingRange{T,R,S}, x::AbstractRange{Int}
     PiecewiseIncreasingRange{T,eltype(newrgs),S}(newrgs, r.divisor)
 end
 
-function Base.getindex(r::PiecewiseUnitRange{T,R}, x::AbstractUnitRange{Int}) where {T,R}
+@inline @propagate_inbounds function Base.getindex(r::PiecewiseUnitRange{T,R}, x::AbstractUnitRange{Int}) where {T,R}
     isempty(x) && return PiecewiseUnitRange{T,R}(R[], Int[])
     (first(x) >= 1 && last(x) <= length(r)) || throw(BoundsError())
 
